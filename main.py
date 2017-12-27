@@ -6,11 +6,13 @@ from twitter import Twitter
 import time
 import ccxt
 from coins import coins
+from notifier import Notifier
 
 symbol_name = {}
 name_symbol = {}
 symbol_exchange = {}
 bot = None
+notifier = Notifier()
 
 def get_coins_bittrex():
     exchange = ccxt.bittrex()
@@ -78,6 +80,7 @@ def get_sentiment_analysis(text, coins):
 
     return sentiment, blob.sentiment.polarity
 
+
 def get_verdict(sentiment, overall):
     """Use the result from get_sentiment_analysis to determine which coins to buy and
     return an array of coin symbols e.g. ["XVG", "DGB"]"""
@@ -88,6 +91,7 @@ def get_verdict(sentiment, overall):
         return to_buy
     else:
         return []
+
 
 def analyze(text):
     """
@@ -103,14 +107,20 @@ def analyze(text):
         return to_buy
     return []
 
+
+def filter_coins(to_buy):
+    f = ['OK', 'PAY', 'BLOCK', 'RISE', 'TIME']
+    filtered = [x for x in to_buy if x[0] not in f]
+    return filtered
+
+
 def twitter_tweet_callback(text, user, link):
     to_buy = analyze(text)
+    to_buy = filter_coins(to_buy)
     if len(to_buy) > 0:
-        for asset in to_buy:
-            symbol = asset[0]
-            exchange = symbol_exchange[symbol]
-            print('Buy ' + str(symbol) + ' on ' + exchange + '.')
-        #bot.notify_tweet(text, user, link, to_buy)
+        msg = str(to_buy) + ".\nTweet: " + text + ".\n" + link
+        # print(msg)
+        notifier.buy(msg)
 
 if __name__ == "__main__":
     # Populate coins

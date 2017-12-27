@@ -18,6 +18,8 @@ tweepy = "*"
 python-bittrex = "*"
 pillow = "*"
 pytesseract = "*"
+twilio = "*"
+ccxt = "*"
 
 
 [requires]
