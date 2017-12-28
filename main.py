@@ -123,9 +123,11 @@ def twitter_tweet_callback(text, user, link):
         notifier.buy(msg)
 
 if __name__ == "__main__":
-    # Populate coins
+    # Populate coins. Ordering determines exchange at which to buy.
+    # Lowest to highest priority (e.g. last call is most prioritized exchange).
     get_coins_bittrex()
     get_coins_liqui()
+
     #print(symbol_name)
     #print(name_symbol)
 
